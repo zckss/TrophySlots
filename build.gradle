@@ -1,11 +1,10 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+       maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 
@@ -61,6 +60,10 @@ minecraft {
     }
 }
 
+//tasks.withType(JavaCompile).configureEach {
+//    it.options.compilerArgs.add("--Xlint:deprecated")
+//}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${forgeVersion}"
 }
@@ -72,7 +75,7 @@ jar {
                 "Specification-Vendor"    : "Lomeli",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : "${version}",
+                "Implementation-Version"  : "${archiveVersion}",
                 "Implementation-Vendor"   : "Lomeli",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
