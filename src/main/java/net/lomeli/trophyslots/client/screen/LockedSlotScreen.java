@@ -29,23 +29,23 @@ public class LockedSlotScreen extends Button {
     @SuppressWarnings("all")
     public LockedSlotScreen(ContainerScreen<?> parentScreen) {
         super(0, 0, 0, 0, new StringTextComponent(""), null);
-        this.field_230693_o_ = false;
+        this.active = false;
         this.parentScreen = parentScreen;
     }
 
     @Override
     @SuppressWarnings("NullableProblems")
-    public void func_230431_b_(MatrixStack stack, int mouseX, int mouseY, float renderTick) {
-        if (!this.field_230694_p_) return;
+    public void renderButton(MatrixStack stack, int mouseX, int mouseY, float renderTick) {
+        if (!this.visible) return;
         Minecraft mc = Minecraft.getInstance();
 
-        for (Slot slot : parentScreen.getContainer().inventorySlots) {
-            if (slot.inventory instanceof PlayerInventory) {
-                PlayerEntity player = ((PlayerInventory) slot.inventory).player;
-                if (!player.abilities.isCreativeMode) {
+        for (Slot slot : parentScreen.getMenu().slots) {
+            if (slot.container instanceof PlayerInventory) {
+                PlayerEntity player = ((PlayerInventory) slot.container).player;
+                if (!player.abilities.instabuild) {
                     IPlayerSlots playerSlots = PlayerSlotHelper.getPlayerSlots(player);
                     if (playerSlots != null && !playerSlots.slotUnlocked(slot.getSlotIndex()))
-                        drawLockedSlot(mc, slot.xPos, slot.yPos);
+                        drawLockedSlot(mc, slot.x, slot.y);
                 }
             }
         }
@@ -60,29 +60,29 @@ public class LockedSlotScreen extends Button {
         int y = top + yPos;
 
         MatrixStack matrix = new MatrixStack();
-        matrix.push();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        matrix.pushPose();
+        GlStateManager._enableBlend();
+        GlStateManager._blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         if (ClientConfig.renderType.isGreyOut()) {
             RenderSystem.enableLighting();
 
-            this.func_238468_a_(matrix, x, y, x + 16, y + 16, GREY_COLOR, GREY_COLOR);
+            this.fillGradient(matrix, x, y, x + 16, y + 16, GREY_COLOR, GREY_COLOR);
             RenderSystem.disableLighting();
         }
         if (ClientConfig.renderType.drawCross()) {
-            TextureAtlasSprite crossSprite = mc.getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE)
+            TextureAtlasSprite crossSprite = mc.getTextureAtlas(PlayerContainer.BLOCK_ATLAS)
                     .apply(SpriteHandler.CROSS_SPRITE);
             RenderSystem.color4f(1f, 1f, 1f, 1f);
-            mc.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-            AbstractGui.func_238470_a_(matrix, x, y, this.func_230927_p_(), 16, 16, crossSprite);
+            mc.getTextureManager().bind(PlayerContainer.BLOCK_ATLAS);
+            AbstractGui.blit(matrix, x, y, this.getBlitOffset(), 16, 16, crossSprite);
         }
 
-        GlStateManager.disableBlend();
-        matrix.pop();
+        GlStateManager._disableBlend();
+        matrix.popPose();
     }
 
     @Override
-    public void func_230930_b_() {
+    public void onPress() {
     }
 }

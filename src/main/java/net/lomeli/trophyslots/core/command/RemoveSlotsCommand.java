@@ -26,7 +26,7 @@ public class RemoveSlotsCommand implements ISubCommand {
 
     @Override
     public void registerSubCommand(LiteralArgumentBuilder<CommandSource> argumentBuilder) {
-        argumentBuilder.then(Commands.literal(getName()).requires(source -> source.hasPermissionLevel(3))
+        argumentBuilder.then(Commands.literal(getName()).requires(source -> source.hasPermission(3))
                 .then(Commands.literal("all")
                         .executes(context -> removePlayersSlots(context.getSource(), null,
                                 InventoryUtils.getMaxUnlockableSlots()))
@@ -54,7 +54,7 @@ public class RemoveSlotsCommand implements ISubCommand {
         if (targets != null && !targets.isEmpty())
             players.addAll(targets);
         else
-            players.add(source.asPlayer());
+            players.add(source.getPlayerOrException());
 
         players.forEach(profile -> {
             if (removePlayerSlots(source, profile, amount))
@@ -73,7 +73,7 @@ public class RemoveSlotsCommand implements ISubCommand {
             return false;
         playerSlots.unlockSlot(-amount);
         PacketHandler.sendToClient(new MessageSlotClient(playerSlots.getSlotsUnlocked()), player);
-        source.sendFeedback(new TranslationTextComponent("command.trophyslots.remove_slots.success",
+        source.sendSuccess(new TranslationTextComponent("command.trophyslots.remove_slots.success",
                 amount, player.getGameProfile().getName()), false);
         return true;
     }

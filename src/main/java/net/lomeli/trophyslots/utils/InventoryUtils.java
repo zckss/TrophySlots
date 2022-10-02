@@ -20,17 +20,17 @@ public class InventoryUtils {
     public static boolean canMergeStacks(ItemStack slotStack, ItemStack inputStack) {
         if (slotStack.getItem() != inputStack.getItem())
             return false;
-        else if (slotStack.getDamage() != inputStack.getDamage())
+        else if (slotStack.getDamageValue() != inputStack.getDamageValue())
             return false;
         else if (slotStack.getCount() >= slotStack.getMaxStackSize())
             return false;
         else
-            return ItemStack.areItemStackTagsEqual(slotStack, inputStack);
+            return ItemStack.tagMatches(slotStack, inputStack);
     }
 
     public static int getNextEmptySlot(IPlayerSlots slotManager, PlayerInventory inventory) {
-        for (int i = 0; i < inventory.mainInventory.size(); i++) {
-            if (slotManager.slotUnlocked(i) && inventory.getStackInSlot(i).isEmpty())
+        for (int i = 0; i < inventory.items.size(); i++) {
+            if (slotManager.slotUnlocked(i) && inventory.getItem(i).isEmpty())
                 return i;
         }
         return -1;
@@ -38,9 +38,9 @@ public class InventoryUtils {
 
     //God I hate this method but I need it for now.
     public static int searchForPossibleSlots(IPlayerSlots slotManager, PlayerInventory inventory, ItemStack stack) {
-        for (int i = 0; i < inventory.mainInventory.size(); i++) {
+        for (int i = 0; i < inventory.items.size(); i++) {
             if (slotManager.slotUnlocked(i)) {
-                ItemStack item = inventory.getStackInSlot(i);
+                ItemStack item = inventory.getItem(i);
                 if (item.isEmpty())
                     return i;
                 else if (canMergeStacks(item, stack))

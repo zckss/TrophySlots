@@ -18,7 +18,7 @@ public class SpriteHandler {
 
     @SubscribeEvent
     public static void stitchSprite(TextureStitchEvent.Pre event) {
-        if (event.getMap().getTextureLocation() != PlayerContainer.LOCATION_BLOCKS_TEXTURE)
+        if (event.getMap().location() != PlayerContainer.BLOCK_ATLAS)
             return;
         event.addSprite(CROSS_SPRITE);
         event.addSprite(SNOWFLAKE);

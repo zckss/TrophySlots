@@ -35,17 +35,17 @@ public class TSConfigCommand implements ISubCommand {
                         config.equalsIgnoreCase("loseSlotOnDeathAmount") ? -1 : 9,
                         InventoryUtils.getMaxUnlockableSlots()
                 );
-                base.then(Commands.literal(config).requires((source -> source.hasPermissionLevel(2)))
+                base.then(Commands.literal(config).requires((source -> source.hasPermission(2)))
                         .then(Commands.argument("amount", intArg)
                                 .executes(context -> setConfigValue(context.getSource(), config,
                                         IntegerArgumentType.getInteger(context, "amount")))));
             } else if (i == 2) {
-                base.then(Commands.literal(config).requires((source -> source.hasPermissionLevel(2)))
+                base.then(Commands.literal(config).requires((source -> source.hasPermission(2)))
                         .then(Commands.argument("mode", EnumArgument.enumArgument(AdvancementHandler.ListMode.class))
                                 .executes(context -> setConfigValue(context.getSource(), config,
                                         context.getArgument("mode", AdvancementHandler.ListMode.class)))));
             } else {
-                base.then(Commands.literal(config).requires((source -> source.hasPermissionLevel(2)))
+                base.then(Commands.literal(config).requires((source -> source.hasPermission(2)))
                         .then(Commands.argument("value", BoolArgumentType.bool())
                                 .executes(context -> setConfigValue(context.getSource(), config,
                                         BoolArgumentType.getBool(context, "value")))));
@@ -95,7 +95,7 @@ public class TSConfigCommand implements ISubCommand {
 
         PacketHandler.sendToServer(new MessageServerConfig(advancementUnlock, useTrophies, buyTrophies, reverseOrder,
                 loseSlots, losingSlots, startingSlots, mode));
-        source.sendFeedback(new TranslationTextComponent("command.trophyslots.config.success", config,
+        source.sendSuccess(new TranslationTextComponent("command.trophyslots.config.success", config,
                 value.toString()), false);
         return 0;
     }

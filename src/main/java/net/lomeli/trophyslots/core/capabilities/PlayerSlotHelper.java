@@ -16,13 +16,13 @@ public class PlayerSlotHelper {
     }
 
     public static boolean isSlotUnlocked(Slot slot) {
-        return isSlotUnlocked(slot.inventory, slot.getSlotIndex());
+        return isSlotUnlocked(slot.container, slot.getSlotIndex());
     }
 
     private static boolean isSlotUnlocked(IInventory inventory, int index) {
         if (inventory instanceof PlayerInventory) {
             PlayerEntity player = ((PlayerInventory) inventory).player;
-            if (!player.abilities.isCreativeMode) {
+            if (!player.abilities.instabuild) {
                 IPlayerSlots playerSlots = getPlayerSlots(player);
                 return playerSlots.slotUnlocked(index);
             }

@@ -16,7 +16,7 @@ public class UnlockSlotTrigger extends AbstractCriterionTrigger<UnlockSlotTrigge
 
     @Override
     @SuppressWarnings("NullableProblems")
-    protected Instance func_230241_b_(JsonObject jsonObject, EntityPredicate.AndPredicate predicate, ConditionArrayParser arrayParser) {
+    protected Instance createInstance(JsonObject jsonObject, EntityPredicate.AndPredicate predicate, ConditionArrayParser arrayParser) {
         return new Instance(jsonObject.get("slots_unlocked").getAsInt(), predicate);
     }
 
@@ -27,7 +27,7 @@ public class UnlockSlotTrigger extends AbstractCriterionTrigger<UnlockSlotTrigge
     }
 
     public void trigger(ServerPlayerEntity player) {
-        this.func_235959_a_(player, (instance) -> instance.test(player));
+        this.trigger(player, (instance) -> instance.test(player));
     }
 
     static class Instance extends CriterionInstance {

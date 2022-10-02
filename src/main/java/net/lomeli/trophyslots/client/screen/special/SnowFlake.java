@@ -34,17 +34,17 @@ public class SnowFlake {
 
     public void render() {
         MatrixStack matrix = new MatrixStack();
-        matrix.push();
-        GlStateManager.enableBlend();
+        matrix.pushPose();
+        GlStateManager._enableBlend();
 
         RenderSystem.color4f(1f, 1f, 1f, alpha);
         TextureAtlasSprite snowflake = Minecraft.getInstance()
-                .getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(SpriteHandler.SNOWFLAKE);
-        Minecraft.getInstance().getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-        AbstractGui.func_238470_a_(matrix, this.xPos, this.yPos, 300, 6, 6, snowflake);
+        		.getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(SpriteHandler.SNOWFLAKE);
+        Minecraft.getInstance().getTextureManager().bind(PlayerContainer.BLOCK_ATLAS);
+        AbstractGui.blit(matrix, this.xPos, this.yPos, 300, 6, 6, snowflake);
 
-        GlStateManager.disableBlend();
-        matrix.pop();
+        GlStateManager._disableBlend();
+        matrix.popPose();
     }
 
     public void update(Wind wind, float gravity) {

@@ -36,10 +36,10 @@ public class AdvancementHandler {
     public static void advancementEvent(AdvancementEvent event) {
         if (!ServerConfig.unlockViaAdvancements) return;
         ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-        if (player instanceof FakePlayer || player.abilities.isCreativeMode) return;
+        if (player instanceof FakePlayer || player.abilities.instabuild) return;
         Advancement advancement = event.getAdvancement();
         if (advancement.getId().getNamespace().equalsIgnoreCase(TrophySlots.MOD_ID) || advancement.getDisplay() == null
-                || !advancement.getDisplay().shouldAnnounceToChat()) return;
+                || !advancement.getDisplay().shouldAnnounceChat()) return;
         if (ServerConfig.listMode == ListMode.WHITE && !ServerConfig.advancementList.contains(advancement.getId()))
             return;
         if (ServerConfig.listMode == ListMode.BLACK && ServerConfig.advancementList.contains(advancement.getId()))
@@ -47,9 +47,9 @@ public class AdvancementHandler {
         IPlayerSlots playerSlots = PlayerSlotHelper.getPlayerSlots(player);
         if (playerSlots == null || playerSlots.maxSlotsUnlocked()) return;
         if (playerSlots.unlockSlot(1)) {
-            player.func_241151_a_(new TranslationTextComponent("msg.trophyslots.unlock"), ChatType.CHAT,
-                    Util.field_240973_b_);
-            TrophySlots.log.debug("Sending slot update packet to player {}", player.getName().func_230531_f_());
+            player.sendMessage(new TranslationTextComponent("msg.trophyslots.unlock"), ChatType.CHAT,
+                    Util.NIL_UUID);
+            TrophySlots.log.debug("Sending slot update packet to player {}", player.getName().getString());
             PacketHandler.sendToClient(new MessageSlotClient(playerSlots.getSlotsUnlocked()), player);
             ModCriteria.UNLOCK_SLOT.trigger(player);
         }

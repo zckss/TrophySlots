@@ -30,7 +30,7 @@ public class PlayerHandler {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
                 TrophySlots.log.info("{} died. Losing {} slot(s).", player.getName().getString(), ServerConfig.loseSlotNum);
 
-                if (player.world.isRemote) return;
+                if (player.level.isClientSide) return;
                 IPlayerSlots playerSlots = PlayerSlotHelper.getPlayerSlots(player);
                 if (playerSlots == null) return;
 
@@ -42,9 +42,9 @@ public class PlayerHandler {
                 String msg = ServerConfig.loseSlotNum == 1 ? "msg.trophyslots.lost_slot" :
                         ServerConfig.loseSlotNum == -1 ? "msg.trophyslots.lost_all" : "msg.trophyslots.lost_slot.multiple";
                 if (ServerConfig.loseSlotNum > 1)
-                    player.func_241151_a_(new TranslationTextComponent(msg, ServerConfig.loseSlotNum), ChatType.CHAT,
-                            Util.field_240973_b_);
-                else player.func_241151_a_(new TranslationTextComponent(msg), ChatType.CHAT, Util.field_240973_b_);
+                    player.sendMessage(new TranslationTextComponent(msg, ServerConfig.loseSlotNum), ChatType.CHAT,
+                            Util.NIL_UUID);
+                else player.sendMessage(new TranslationTextComponent(msg), ChatType.CHAT, Util.NIL_UUID);
                 PacketHandler.sendToClient(new MessageSlotClient(playerSlots.getSlotsUnlocked()), player);
             }
         }
@@ -54,27 +54,27 @@ public class PlayerHandler {
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         PlayerEntity player = event.player;
-        if (player.world.isRemote || player.abilities.isCreativeMode) return;
+        if (player.level.isClientSide || player.abilities.instabuild) return;
 
         IPlayerSlots playerSlots = PlayerSlotHelper.getPlayerSlots(player);
         if (playerSlots == null || playerSlots.maxSlotsUnlocked()) return;
 
-        for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
+        for (int i = 0; i < player.inventory.items.size(); i++) {
             if (playerSlots.slotUnlocked(i)) continue;
-            ItemStack stack = player.inventory.mainInventory.get(i);
+            ItemStack stack = player.inventory.items.get(i);
             if (stack.isEmpty()) continue;
             int slot = InventoryUtils.getNextEmptySlot(playerSlots, player.inventory);
             if (slot <= -1) {
-                player.entityDropItem(stack, 0f);
-                player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-            } else player.inventory.setInventorySlotContents(slot, player.inventory.removeStackFromSlot(i));
+                player.spawnAtLocation(stack, 0f);
+                player.inventory.setItem(i, ItemStack.EMPTY);
+            } else player.inventory.setItem(slot, player.inventory.removeItemNoUpdate(i));
         }
     }
 
     @SubscribeEvent
     public static void onItemPickup(EntityItemPickupEvent event) {
         PlayerEntity player = event.getPlayer();
-        if (player.world.isRemote || player.abilities.isCreativeMode) return;
+        if (player.level.isClientSide || player.abilities.instabuild) return;
         IPlayerSlots playerSlots = PlayerSlotHelper.getPlayerSlots(player);
         if (playerSlots == null || playerSlots.maxSlotsUnlocked()) return;
 

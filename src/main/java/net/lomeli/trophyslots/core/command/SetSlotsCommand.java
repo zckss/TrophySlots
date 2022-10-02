@@ -25,7 +25,7 @@ public class SetSlotsCommand implements ISubCommand {
 
     @Override
     public void registerSubCommand(LiteralArgumentBuilder<CommandSource> argumentBuilder) {
-        argumentBuilder.then(Commands.literal(getName()).requires(source -> source.hasPermissionLevel(2))
+        argumentBuilder.then(Commands.literal(getName()).requires(source -> source.hasPermission(2))
                 .then(Commands.argument("target", EntityArgument.players())
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0, InventoryUtils.getMaxUnlockableSlots()))
                                 .executes(context -> setPlayersSlots(context.getSource(),
@@ -45,7 +45,7 @@ public class SetSlotsCommand implements ISubCommand {
                 if (setPlayerSlot(source, player, amount))
                     result.incrementAndGet();
             });
-        } else if (setPlayerSlot(source, source.asPlayer(), amount))
+        } else if (setPlayerSlot(source, source.getPlayerOrException(), amount))
             result.incrementAndGet();
 
         if (result.intValue() == 0)
@@ -62,7 +62,7 @@ public class SetSlotsCommand implements ISubCommand {
         if (playerSlots.getSlotsUnlocked() > 0)
             ModCriteria.UNLOCK_SLOT.trigger(player);
         PacketHandler.sendToClient(new MessageSlotClient(playerSlots.getSlotsUnlocked()), player);
-        source.sendFeedback(new TranslationTextComponent("command.trophyslots.set_slots.success",
+        source.sendSuccess(new TranslationTextComponent("command.trophyslots.set_slots.success",
                 player.getGameProfile().getName(), playerSlots.getSlotsUnlocked()), false);
         return true;
     }

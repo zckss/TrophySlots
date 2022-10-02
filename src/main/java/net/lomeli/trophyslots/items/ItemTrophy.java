@@ -1,5 +1,10 @@
 package net.lomeli.trophyslots.items;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.lomeli.trophyslots.TrophySlots;
 import net.lomeli.trophyslots.core.ServerConfig;
 import net.lomeli.trophyslots.core.capabilities.IPlayerSlots;
@@ -22,10 +27,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
 public class ItemTrophy extends Item {
     public static final String VILLAGER_TROPHY = "fromVillager";
     private static final String SLOT_AMOUNTS = "slotAmounts";
@@ -33,21 +34,21 @@ public class ItemTrophy extends Item {
     private final TrophyType trophyType;
 
     public ItemTrophy(TrophyType trophyType) {
-        super(new Item.Properties().maxStackSize(1).group(ItemGroup.MISC));
+        super(new Item.Properties().stacksTo(1).tab(ItemGroup.TAB_MISC));
         this.setRegistryName(TrophySlots.MOD_ID, trophyType.getName());
         this.trophyType = trophyType;
     }
 
     @Override
     @SuppressWarnings("NullableProblems")
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, @Nonnull Hand hand) {
-        ItemStack stack = player.getHeldItem(hand);
-        ActionResult<ItemStack> result = ActionResult.resultFail(stack);
-        if (!world.isRemote && !stack.isEmpty()) {
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, @Nonnull Hand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        ActionResult<ItemStack> result = ActionResult.fail(stack);
+        if (!world.isClientSide && !stack.isEmpty()) {
             if (!ServerConfig.canBuyTrophy && fromVillager(stack))
-                player.sendStatusMessage(new TranslationTextComponent("msg.trophyslots.villager"), false);
+                player.displayClientMessage(new TranslationTextComponent("msg.trophyslots.villager"), false);
             else if (!ServerConfig.canUseTrophy)
-                player.sendStatusMessage(new TranslationTextComponent("msg.trophyslots.trophy"), false);
+                player.displayClientMessage(new TranslationTextComponent("msg.trophyslots.trophy"), false);
             else if (hand == Hand.MAIN_HAND) {
                 int amount = trophyType == TrophyType.MASTER ? InventoryUtils.getMaxUnlockableSlots() : getSlotAmounts(stack);
                 if (amount != 0) {
@@ -58,11 +59,11 @@ public class ItemTrophy extends Item {
                     IPlayerSlots playerSlots = PlayerSlotHelper.getPlayerSlots(player);
                     if (playerSlots != null && playerSlots.unlockSlot(amount)) {
                         if (amount == 1 || amount == -1 || amount == InventoryUtils.getMaxUnlockableSlots())
-                            player.sendStatusMessage(new TranslationTextComponent(msg), false);
+                            player.displayClientMessage(new TranslationTextComponent(msg), false);
                         else
-                            player.sendStatusMessage(new TranslationTextComponent(msg, amount), false);
+                            player.displayClientMessage(new TranslationTextComponent(msg, amount), false);
 
-                        if (!player.abilities.isCreativeMode)
+                        if (!player.abilities.instabuild)
                             stack.shrink(1);
                         if (player instanceof ServerPlayerEntity) {
                             TrophySlots.log.info("Sending slot update packet to player {}.", player.getName().getString());
@@ -79,7 +80,7 @@ public class ItemTrophy extends Item {
 
     @Override
     @SuppressWarnings("NullableProblems")
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> toolTips, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> toolTips, ITooltipFlag flag) {
         //if (ClientUtil.safeKeyDown(ClientUtil.LEFT_SHIFT)) {
         if (((ItemTrophy) stack.getItem()).getTrophyType() == TrophyType.MASTER)
             toolTips.add(new TranslationTextComponent("subtext.trophyslots.trophy.cheat"));

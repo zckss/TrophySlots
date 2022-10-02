@@ -19,7 +19,7 @@ archivesBaseName = modArchive
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
-    mappings channel: 'snapshot', version: "${mcMappings}"
+    mappings channel: 'official', version: '1.16.5'
 
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -63,9 +63,18 @@ minecraft {
 //tasks.withType(JavaCompile).configureEach {
 //    it.options.compilerArgs.add("--Xlint:deprecated")
 //}
+repositories {
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${forgeVersion}"
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
+    runtimeOnly fg.deobf('curse.maven:corpse-316582:3447907')
 }
 
 jar {

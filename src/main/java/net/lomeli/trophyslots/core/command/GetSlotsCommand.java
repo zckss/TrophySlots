@@ -25,7 +25,7 @@ public class GetSlotsCommand implements ISubCommand {
         argumentBuilder.then(Commands.literal(getName())
                 .executes((context -> givePlayerSlots(context.getSource(), null)))
                 .then(Commands.argument("target", EntityArgument.players())
-                        .requires((source -> source.hasPermissionLevel(2)))
+                        .requires((source -> source.hasPermission(2)))
                         .executes((context -> givePlayerSlots(context.getSource(),
                                 EntityArgument.getPlayers(context, "target"))))
                 )
@@ -39,13 +39,13 @@ public class GetSlotsCommand implements ISubCommand {
         if (targets != null && !targets.isEmpty())
             players.addAll(targets);
         else
-            players.add(source.asPlayer());
+            players.add(source.getPlayerOrException());
 
         players.forEach(player -> {
             IPlayerSlots playerSlots = PlayerSlotHelper.getPlayerSlots(player);
             if (playerSlots != null) {
                 result.getAndIncrement();
-                source.sendFeedback(new TranslationTextComponent("command.trophyslots.get_slots.success",
+                source.sendSuccess(new TranslationTextComponent("command.trophyslots.get_slots.success",
                         player.getName(), playerSlots.getSlotsUnlocked()), false);
             }
         });

@@ -25,7 +25,7 @@ public class UnlockSlotsCommand implements ISubCommand {
 
     @Override
     public void registerSubCommand(LiteralArgumentBuilder<CommandSource> argumentBuilder) {
-        argumentBuilder.then(Commands.literal(getName()).requires(source -> source.hasPermissionLevel(2))
+        argumentBuilder.then(Commands.literal(getName()).requires(source -> source.hasPermission(2))
                 .then(Commands.argument("target", EntityArgument.players())
                         .then(Commands.literal("all")
                                 .executes(context -> unlockPlayerSlots(context.getSource(),
@@ -56,7 +56,7 @@ public class UnlockSlotsCommand implements ISubCommand {
                 if (unlockSlots(source, player, amount))
                     result.incrementAndGet();
             });
-        } else if (unlockSlots(source, source.asPlayer(), amount))
+        } else if (unlockSlots(source, source.getPlayerOrException(), amount))
             result.incrementAndGet();
 
         if (result.intValue() == 0)
@@ -72,7 +72,7 @@ public class UnlockSlotsCommand implements ISubCommand {
         playerSlots.unlockSlot(amount);
         ModCriteria.UNLOCK_SLOT.trigger(player);
         PacketHandler.sendToClient(new MessageSlotClient(playerSlots.getSlotsUnlocked()), player);
-        source.sendFeedback(new TranslationTextComponent("command.trophyslots.unlock_slots.success",
+        source.sendSuccess(new TranslationTextComponent("command.trophyslots.unlock_slots.success",
                 amount, player.getGameProfile().getName()), false);
         return true;
     }

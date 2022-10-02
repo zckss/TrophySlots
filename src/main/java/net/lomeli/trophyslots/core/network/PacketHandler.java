@@ -32,6 +32,6 @@ public class PacketHandler {
     }
 
     public static void sendToClient(IMessage message, ServerPlayerEntity player) {
-        HANDLER.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+        HANDLER.sendTo(message, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 }

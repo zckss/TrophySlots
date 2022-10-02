@@ -44,7 +44,7 @@ public class TSClientConfigCommand implements ISubCommand {
             case "enablesecret":
                 boolean enabled = (boolean) value;
                 if (enabled)
-                    source.sendFeedback(new TranslationTextComponent(
+                    source.sendSuccess(new TranslationTextComponent(
                             "command.trophyslots.config.special"), false);
                 special = enabled;
                 break;
@@ -53,9 +53,9 @@ public class TSClientConfigCommand implements ISubCommand {
                 throw CONFIG_ERROR.create();
         }
 
-        if (!(source.asPlayer() instanceof FakePlayer)) {
-            PacketHandler.sendToClient(new MessageClientConfig(special, renderType), source.asPlayer());
-            source.sendFeedback(new TranslationTextComponent("command.trophyslots.config.success", config,
+        if (!(source.getPlayerOrException() instanceof FakePlayer)) {
+            PacketHandler.sendToClient(new MessageClientConfig(special, renderType), source.getPlayerOrException());
+            source.sendSuccess(new TranslationTextComponent("command.trophyslots.config.success", config,
                     value.toString()), false);
         } else
             TrophySlots.log.warn("This command only affects the client side. Nothing happens server side.");
